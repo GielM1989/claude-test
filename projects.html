@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mijn Werk — Giel Mallens</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+    * { font-family: 'Inter', sans-serif; }
+
+    body {
+      min-height: 100vh;
+      background-color: #1a0a00;
+      overflow-x: hidden;
+    }
+
+    .bg-scene {
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(
+        180deg,
+        #0d2137 0%,
+        #1a3a5c 18%,
+        #c8620a 45%,
+        #e8841a 58%,
+        #f5b848 72%,
+        #fcd97a 85%,
+        #fff3c0 100%
+      );
+      z-index: 0;
+    }
+
+    .sun {
+      position: fixed;
+      bottom: 28%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #fff8d0 0%, #ffd040 40%, #ff8c00 70%, transparent 100%);
+      box-shadow: 0 0 80px 40px rgba(255,180,0,0.35), 0 0 160px 80px rgba(255,120,0,0.15);
+      z-index: 1;
+    }
+
+    .water {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      height: 28%;
+      background: linear-gradient(180deg, #b35a08 0%, #7a3200 40%, #3d1800 100%);
+      z-index: 1;
+    }
+    .water::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, rgba(255,200,80,0.7), transparent);
+    }
+
+    .tree { position: fixed; bottom: 26%; z-index: 2; }
+    .tree-left  { left: 2%; }
+    .tree-right { right: 2%; }
+
+    .project-card {
+      background: rgba(255,255,255,0.95);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+      position: relative;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+    }
+    .project-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 24px 48px rgba(0,0,0,0.18);
+    }
+    .project-card .card-body {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      padding: 1.5rem;
+    }
+    .project-card .card-body .card-desc {
+      flex: 1;
+    }
+
+    .tag {
+      display: inline-block;
+      font-size: 0.65rem;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: 999px;
+      background: #e8f0ff;
+      color: #0000a4;
+    }
+
+    .btn-back {
+      background: rgba(255,255,255,0.15);
+      border: 1.5px solid rgba(255,255,255,0.4);
+      color: white;
+      transition: all 0.2s ease;
+      backdrop-filter: blur(8px);
+    }
+    .btn-back:hover {
+      background: rgba(255,255,255,0.28);
+      transform: translateX(-3px);
+    }
+
+    @media (max-width: 639px) {
+      .tree { display: none; }
+      .sun  { width: 70px; height: 70px; }
+    }
+  </style>
+</head>
+<body class="min-h-screen px-3 sm:px-4 py-8 sm:py-12">
+
+  <!-- Scene -->
+  <div class="bg-scene"></div>
+  <div class="sun"></div>
+  <div class="water"></div>
+
+  <!-- Trees -->
+  <div class="tree tree-left">
+    <svg width="90" height="220" viewBox="0 0 90 220" fill="none">
+      <rect x="40" y="120" width="10" height="100" fill="#2a0f00"/>
+      <ellipse cx="45" cy="110" rx="38" ry="48" fill="#1a3d00" opacity="0.9"/>
+      <ellipse cx="45" cy="90"  rx="28" ry="36" fill="#1e4700" opacity="0.9"/>
+      <circle cx="30" cy="115" r="7" fill="#FF6600" opacity="0.9"/>
+      <circle cx="55" cy="108" r="6" fill="#ff8c00" opacity="0.9"/>
+      <circle cx="42" cy="128" r="6" fill="#FF6600" opacity="0.9"/>
+      <circle cx="22" cy="98"  r="5" fill="#ff7700" opacity="0.8"/>
+      <circle cx="63" cy="122" r="5" fill="#ff8c00" opacity="0.8"/>
+    </svg>
+  </div>
+  <div class="tree tree-right">
+    <svg width="90" height="220" viewBox="0 0 90 220" fill="none">
+      <rect x="40" y="120" width="10" height="100" fill="#2a0f00"/>
+      <ellipse cx="45" cy="105" rx="40" ry="52" fill="#1a3d00" opacity="0.9"/>
+      <ellipse cx="45" cy="85"  rx="30" ry="38" fill="#1e4700" opacity="0.9"/>
+      <circle cx="28" cy="110" r="7" fill="#FF6600" opacity="0.9"/>
+      <circle cx="58" cy="105" r="6" fill="#ff8c00" opacity="0.9"/>
+      <circle cx="40" cy="122" r="6" fill="#FF6600" opacity="0.9"/>
+      <circle cx="65" cy="118" r="5" fill="#ff7700" opacity="0.8"/>
+    </svg>
+  </div>
+
+  <!-- Content -->
+  <div class="relative z-10 max-w-3xl mx-auto">
+
+    <!-- Terug knop -->
+    <a href="index.html" class="btn-back inline-flex items-center gap-2 text-sm font-semibold px-4 py-2 rounded-xl mb-8">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+      </svg>
+      Terug
+    </a>
+
+    <!-- Header -->
+    <div class="text-center mb-10">
+      <h1 class="text-3xl font-extrabold text-white mb-2 drop-shadow">Mijn Werk</h1>
+      <p class="text-white/70 text-sm">Een selectie van projecten waar ik aan heb gewerkt</p>
+    </div>
+
+    <!-- Grid -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+
+      <!-- Kaart 1: Fureply -->
+      <div class="project-card rounded-2xl border border-gray-100 overflow-hidden shadow-xl">
+        <div class="h-1 w-full" style="background:#0000a4;"></div>
+        <div class="card-body">
+          <div class="w-11 h-11 rounded-xl flex items-center justify-center mb-4" style="background:#e8f0ff;">
+            <svg class="w-5 h-5" fill="none" stroke="#0000a4" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
+            </svg>
+          </div>
+          <p class="text-xs font-semibold uppercase tracking-widest mb-1" style="color:#FF6600;">SaaS · AI</p>
+          <h2 class="text-lg font-extrabold mb-2" style="color:#0000a4;">Fureply</h2>
+          <p class="text-xs text-gray-500 leading-relaxed card-desc mb-5">
+            AI-gedreven klantenservice voor webshops. Automatiseert veelgestelde vragen en verbetert de klantbeleving zonder extra personeel.
+          </p>
+          <div class="flex flex-wrap gap-1.5 mb-5">
+            <span class="tag">AI</span>
+            <span class="tag">SaaS</span>
+            <span class="tag">E-commerce</span>
+          </div>
+          <a href="https://fureply.com" target="_blank" class="flex items-center justify-center gap-1.5 w-full text-xs font-bold py-2.5 rounded-xl text-white transition-all duration-200 hover:opacity-90 hover:-translate-y-0.5" style="background:#0000a4;">
+            Bekijk project
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+            </svg>
+          </a>
+        </div>
+      </div>
+
+      <!-- Kaart 2: Egantic.AI -->
+      <div class="project-card rounded-2xl border border-gray-100 overflow-hidden shadow-xl">
+        <div class="h-1 w-full" style="background:#0000a4;"></div>
+        <div class="card-body">
+          <div class="w-11 h-11 rounded-xl flex items-center justify-center mb-4" style="background:#e8f0ff;">
+            <svg class="w-5 h-5" fill="none" stroke="#0000a4" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+            </svg>
+          </div>
+          <p class="text-xs font-semibold uppercase tracking-widest mb-1" style="color:#FF6600;">AI Agents · bol.com</p>
+          <h2 class="text-lg font-extrabold mb-2" style="color:#0000a4;">Egantic.AI</h2>
+          <p class="text-xs text-gray-500 leading-relaxed card-desc mb-5">
+            AI agentic tool voor bol.com verkopers. Automatiseert beslissingen rond pricing, assortiment en advertenties om omzet én marge structureel te verhogen.
+          </p>
+          <div class="flex flex-wrap gap-1.5 mb-5">
+            <span class="tag">AI Agents</span>
+            <span class="tag">bol.com</span>
+            <span class="tag">E-commerce</span>
+          </div>
+          <a href="#" class="flex items-center justify-center gap-1.5 w-full text-xs font-bold py-2.5 rounded-xl text-white transition-all duration-200 hover:opacity-90 hover:-translate-y-0.5" style="background:#0000a4;">
+            Meer info
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+            </svg>
+          </a>
+        </div>
+      </div>
+
+      <!-- Kaart 3: AI op Maat -->
+      <div class="project-card rounded-2xl border border-gray-100 overflow-hidden shadow-xl">
+        <div class="h-1 w-full" style="background:#0000a4;"></div>
+        <div class="card-body">
+          <div class="w-11 h-11 rounded-xl flex items-center justify-center mb-4" style="background:#e8f0ff;">
+            <svg class="w-5 h-5" fill="none" stroke="#0000a4" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/>
+            </svg>
+          </div>
+          <p class="text-xs font-semibold uppercase tracking-widest mb-1" style="color:#FF6600;">Maatwerk · Bedrijven</p>
+          <h2 class="text-lg font-extrabold mb-2" style="color:#0000a4;">AI op Maat</h2>
+          <p class="text-xs text-gray-500 leading-relaxed card-desc mb-5">
+            Ik bouw AI-oplossingen op maat voor bedrijven — van slimme automatiseringen tot volledige agentic workflows die terugkerende taken overnemen en processen versnellen.
+          </p>
+          <div class="flex flex-wrap gap-1.5 mb-5">
+            <span class="tag">AI Maatwerk</span>
+            <span class="tag">Automatisering</span>
+            <span class="tag">Agents</span>
+          </div>
+          <a href="#" class="flex items-center justify-center gap-1.5 w-full text-xs font-bold py-2.5 rounded-xl text-white transition-all duration-200 hover:opacity-90 hover:-translate-y-0.5" style="background:#0000a4;">
+            Neem contact op
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+            </svg>
+          </a>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Footer -->
+    <p class="text-center text-white/40 text-xs mt-10">© 2026 Giel Mallens · Valencia, Spanje</p>
+
+  </div>
+
+</body>
+</html>

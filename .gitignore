@@ -1,0 +1,28 @@
+# Mac rommelbestanden
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+
+# Windows rommelbestanden
+Thumbs.db
+ehthumbs.db
+
+# Node.js (JavaScript pakketjes)
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Omgevingsvariabelen (wachtwoorden en geheimen!)
+.env
+.env.local
+.env.*.local
+
+# Editor-bestanden (jouw persoonlijke instellingen)
+.vscode/settings.json
+.idea/
+
+# Build-resultaten (automatisch gegenereerde bestanden)
+dist/
+build/

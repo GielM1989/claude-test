@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Giel Mallens — About Me</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+    * { font-family: 'Inter', sans-serif; }
+
+    body {
+      min-height: 100vh;
+      background-color: #1a0a00;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* Warm sky gradient */
+    .bg-scene {
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(
+        180deg,
+        #0d2137 0%,
+        #1a3a5c 18%,
+        #c8620a 45%,
+        #e8841a 58%,
+        #f5b848 72%,
+        #fcd97a 85%,
+        #fff3c0 100%
+      );
+      z-index: 0;
+    }
+
+    /* Sun glow */
+    .sun {
+      position: fixed;
+      bottom: 28%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #fff8d0 0%, #ffd040 40%, #ff8c00 70%, transparent 100%);
+      box-shadow: 0 0 80px 40px rgba(255, 180, 0, 0.35), 0 0 160px 80px rgba(255, 120, 0, 0.15);
+      z-index: 1;
+    }
+
+    /* Horizon water reflection */
+    .water {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 28%;
+      background: linear-gradient(180deg, #b35a08 0%, #7a3200 40%, #3d1800 100%);
+      z-index: 1;
+    }
+    .water::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, rgba(255,200,80,0.7), transparent);
+    }
+
+    /* Orange tree silhouettes */
+    .tree {
+      position: fixed;
+      bottom: 26%;
+      z-index: 2;
+    }
+    .tree-left  { left: 2%;  }
+    .tree-right { right: 2%; }
+    .tree-left2  { left: 12%; }
+    .tree-right2 { right: 12%; }
+
+    /* Floating orange slices decoration */
+    .orange-decor {
+      position: fixed;
+      z-index: 2;
+      opacity: 0.18;
+    }
+
+    /* Card */
+    .card {
+      position: relative;
+      z-index: 10;
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+    }
+
+    /* Button hover */
+    .btn-blue { background-color: #0000a4; }
+    .btn-blue:hover { background-color: #0000cc; box-shadow: 0 8px 24px rgba(0,0,164,0.35); transform: translateY(-2px); }
+
+    .btn-orange { background-color: #FF6600; }
+    .btn-orange:hover { background-color: #e65c00; box-shadow: 0 8px 24px rgba(255,102,0,0.35); transform: translateY(-2px); }
+
+    .btn-blue, .btn-orange { transition: all 0.2s ease; }
+
+    /* Beschikbaar badge */
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%       { opacity: 0.4; transform: scale(0.7); }
+    }
+    .pulse-dot { animation: pulse-dot 1.4s ease-in-out infinite; }
+
+    /* Email popup overlay */
+    .popup-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.45);
+      backdrop-filter: blur(4px);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+    }
+    .popup-overlay.open { display: flex; }
+
+    @keyframes popup-in {
+      from { opacity: 0; transform: scale(0.92) translateY(10px); }
+      to   { opacity: 1; transform: scale(1)   translateY(0); }
+    }
+    .popup-box { animation: popup-in 0.22s ease; }
+
+    /* Copy feedback */
+    @keyframes fade-out {
+      0%   { opacity: 1; }
+      70%  { opacity: 1; }
+      100% { opacity: 0; }
+    }
+    .copied-msg { animation: fade-out 1.8s ease forwards; }
+
+    @media (max-width: 639px) {
+      .tree { display: none; }
+      .sun  { width: 70px; height: 70px; }
+    }
+  </style>
+</head>
+<body class="min-h-screen flex items-center justify-center px-0 sm:px-4 py-0 sm:py-16">
+
+  <!-- Scene layers -->
+  <div class="bg-scene"></div>
+  <div class="sun"></div>
+
+  <!-- Orange tree silhouettes (SVG) -->
+  <!-- Far left tree -->
+  <div class="tree tree-left">
+    <svg width="90" height="220" viewBox="0 0 90 220" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="40" y="120" width="10" height="100" fill="#2a0f00"/>
+      <!-- canopy -->
+      <ellipse cx="45" cy="110" rx="38" ry="48" fill="#1a3d00" opacity="0.9"/>
+      <ellipse cx="45" cy="90"  rx="28" ry="36" fill="#1e4700" opacity="0.9"/>
+      <!-- oranges -->
+      <circle cx="30" cy="115" r="7" fill="#FF6600" opacity="0.9"/>
+      <circle cx="55" cy="108" r="6" fill="#ff8c00" opacity="0.9"/>
+      <circle cx="42" cy="128" r="6" fill="#FF6600" opacity="0.9"/>
+      <circle cx="22" cy="98"  r="5" fill="#ff7700" opacity="0.8"/>
+      <circle cx="63" cy="122" r="5" fill="#ff8c00" opacity="0.8"/>
+      <circle cx="48" cy="92"  r="5" fill="#FF6600" opacity="0.8"/>
+    </svg>
+  </div>
+
+  <!-- Far right tree -->
+  <div class="tree tree-right">
+    <svg width="90" height="220" viewBox="0 0 90 220" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="40" y="120" width="10" height="100" fill="#2a0f00"/>
+      <ellipse cx="45" cy="105" rx="40" ry="52" fill="#1a3d00" opacity="0.9"/>
+      <ellipse cx="45" cy="85"  rx="30" ry="38" fill="#1e4700" opacity="0.9"/>
+      <circle cx="28" cy="110" r="7" fill="#FF6600" opacity="0.9"/>
+      <circle cx="58" cy="105" r="6" fill="#ff8c00" opacity="0.9"/>
+      <circle cx="40" cy="122" r="6" fill="#FF6600" opacity="0.9"/>
+      <circle cx="65" cy="118" r="5" fill="#ff7700" opacity="0.8"/>
+      <circle cx="20" cy="95"  r="5" fill="#ff8c00" opacity="0.8"/>
+      <circle cx="50" cy="90"  r="5" fill="#FF6600" opacity="0.8"/>
+    </svg>
+  </div>
+
+  <!-- Second left tree (smaller) -->
+  <div class="tree tree-left2">
+    <svg width="70" height="170" viewBox="0 0 70 170" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="31" y="95" width="8" height="75" fill="#2a0f00"/>
+      <ellipse cx="35" cy="88" rx="30" ry="38" fill="#163300" opacity="0.85"/>
+      <ellipse cx="35" cy="72" rx="22" ry="28" fill="#1a3d00" opacity="0.85"/>
+      <circle cx="22" cy="92"  r="6" fill="#FF6600" opacity="0.85"/>
+      <circle cx="46" cy="88"  r="5" fill="#ff8c00" opacity="0.85"/>
+      <circle cx="33" cy="100" r="5" fill="#FF6600" opacity="0.8"/>
+      <circle cx="52" cy="100" r="4" fill="#ff7700" opacity="0.75"/>
+    </svg>
+  </div>
+
+  <!-- Second right tree (smaller) -->
+  <div class="tree tree-right2">
+    <svg width="70" height="170" viewBox="0 0 70 170" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="31" y="95" width="8" height="75" fill="#2a0f00"/>
+      <ellipse cx="35" cy="88" rx="30" ry="38" fill="#163300" opacity="0.85"/>
+      <ellipse cx="35" cy="72" rx="22" ry="28" fill="#1a3d00" opacity="0.85"/>
+      <circle cx="20" cy="90"  r="6" fill="#FF6600" opacity="0.85"/>
+      <circle cx="48" cy="86"  r="5" fill="#ff8c00" opacity="0.85"/>
+      <circle cx="34" cy="100" r="5" fill="#FF6600" opacity="0.8"/>
+      <circle cx="16" cy="100" r="4" fill="#ff7700" opacity="0.75"/>
+    </svg>
+  </div>
+
+  <!-- Water -->
+  <div class="water"></div>
+
+  <!-- Email popup -->
+  <div class="popup-overlay" id="emailPopup" onclick="closePopup(event)">
+    <div class="popup-box bg-white rounded-2xl shadow-2xl p-7 w-80 text-center" onclick="event.stopPropagation()">
+      <!-- Icoon -->
+      <div class="flex justify-center mb-4">
+        <div class="w-14 h-14 rounded-full flex items-center justify-center" style="background:#e8f0ff;">
+          <svg class="w-7 h-7" fill="none" stroke="#0000a4" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+          </svg>
+        </div>
+      </div>
+      <h3 class="text-base font-bold mb-1" style="color:#0000a4;">Stuur een e-mail</h3>
+      <p class="text-xs text-gray-400 mb-4">Klik op het adres om het te kopiëren</p>
+      <!-- E-mailadres -->
+      <button
+        onclick="copyEmail()"
+        class="w-full flex items-center justify-between gap-3 px-4 py-3 rounded-xl border border-gray-200 hover:border-blue-300 hover:bg-blue-50 transition-all group"
+      >
+        <span class="text-sm font-medium text-gray-700 truncate">mallens.giel1989@gmail.com</span>
+        <svg id="copyIcon" class="w-4 h-4 flex-shrink-0 text-gray-400 group-hover:text-blue-600 transition-colors" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+        </svg>
+      </button>
+      <!-- Kopieer-bevestiging -->
+      <div id="copiedMsg" class="hidden mt-3">
+        <span class="copied-msg inline-flex items-center gap-1.5 text-xs font-semibold text-green-600 bg-green-50 px-3 py-1.5 rounded-full">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+          </svg>
+          Gekopieerd!
+        </span>
+      </div>
+      <!-- Sluiten -->
+      <button onclick="document.getElementById('emailPopup').classList.remove('open')" class="mt-5 text-xs text-gray-400 hover:text-gray-600 transition-colors">
+        Sluiten
+      </button>
+    </div>
+  </div>
+
+  <!-- Card -->
+  <div class="card rounded-none sm:rounded-3xl shadow-2xl p-6 sm:p-8 max-w-sm w-full min-h-screen sm:min-h-0 text-center border-0 sm:border border-orange-100 flex flex-col justify-center sm:block">
+
+    <!-- Beschikbaar badge -->
+    <div class="flex justify-center mb-5">
+      <span class="inline-flex items-center gap-2 text-xs font-semibold px-3 py-1.5 rounded-full" style="background:#dcfce7; color:#15803d;">
+        <span class="pulse-dot w-2 h-2 rounded-full inline-block" style="background:#16a34a;"></span>
+        Beschikbaar voor projecten
+      </span>
+    </div>
+
+    <!-- Profielfoto -->
+    <div class="flex justify-center mb-5">
+      <div class="relative">
+        <img
+          src="Giel.jpg"
+          alt="Profielfoto Giel Mallens"
+          class="w-28 h-28 rounded-full object-cover shadow-lg"
+          style="border: 4px solid #0000a4;"
+        />
+        <!-- Online indicator -->
+        <span class="absolute bottom-1 right-1 w-4 h-4 rounded-full border-2 border-white" style="background:#FF6600;"></span>
+      </div>
+    </div>
+
+    <!-- Naam -->
+    <h1 class="text-2xl font-extrabold tracking-tight mb-0.5" style="color: #0000a4;">Giel Mallens</h1>
+
+    <!-- Titel -->
+    <p class="text-sm font-semibold mb-1" style="color: #FF6600;">Oprichter van Fureply</p>
+
+    <!-- Locatie -->
+    <div class="flex items-center justify-center gap-1 text-gray-400 text-xs mb-4">
+      <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+        <path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+      </svg>
+      Valencia, Spanje
+    </div>
+
+    <!-- Badges -->
+    <div class="flex flex-wrap justify-center gap-2 mb-5">
+      <span class="text-xs font-semibold px-3 py-1 rounded-full text-white" style="background-color:#0000a4;">E-commerce</span>
+      <span class="text-xs font-semibold px-3 py-1 rounded-full text-white" style="background-color:#FF6600;">7+ jaar ervaring</span>
+      <span class="text-xs font-semibold px-3 py-1 rounded-full" style="background:#e8f0ff; color:#0000a4;">AI &amp; Automatisering</span>
+    </div>
+
+    <!-- Tagline -->
+    <p class="text-xs font-medium mb-4 italic text-gray-500">
+      "Beginnend developer die leert bouwen met AI"
+    </p>
+
+    <!-- Divider -->
+    <div class="border-t border-gray-100 mb-4"></div>
+
+    <!-- Bio -->
+    <p class="text-gray-600 text-sm leading-relaxed mb-7">
+      Met meer dan 7 jaar ervaring in e-commerce weet ik als geen ander wat webshops nodig hebben.
+      Vanuit Valencia bouw ik aan Fureply, een AI-gedreven klantenservice-oplossing voor online retailers.
+      Ik combineer commerciële kennis met een groeiende passie voor AI en moderne webtechnologie.
+    </p>
+
+    <!-- Mijn werk knop -->
+    <a href="projects.html" class="flex items-center justify-center gap-2 w-full mb-4 text-sm font-semibold px-5 py-2.5 rounded-xl border-2 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md" style="border-color:#0000a4; color:#0000a4; background:transparent;" onmouseover="this.style.background='#f0f0ff'" onmouseout="this.style.background='transparent'">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M19 11H7m0 0l4-4m-4 4l4 4"/>
+        <path stroke-linecap="round" stroke-linejoin="round" d="M5 3h14a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2z"/>
+      </svg>
+      Mijn werk
+    </a>
+
+    <!-- Knoppen -->
+    <div class="flex flex-col sm:flex-row gap-3 justify-center">
+      <button onclick="document.getElementById('emailPopup').classList.add('open')" class="btn-blue flex items-center justify-center gap-2 text-white text-sm font-semibold px-5 py-2.5 rounded-xl">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+        </svg>
+        Email
+      </button>
+      <a href="#" class="btn-blue flex items-center justify-center gap-2 text-white text-sm font-semibold px-5 py-2.5 rounded-xl">
+        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z"/>
+          <circle cx="4" cy="4" r="2"/>
+        </svg>
+        LinkedIn
+      </a>
+      <a href="#" class="btn-orange flex items-center justify-center gap-2 text-white text-sm font-semibold px-5 py-2.5 rounded-xl">
+        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+          <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
+        </svg>
+        GitHub
+      </a>
+    </div>
+
+  </div>
+
+  <script>
+    function closePopup(e) {
+      document.getElementById('emailPopup').classList.remove('open');
+    }
+
+    function copyEmail() {
+      navigator.clipboard.writeText('mallens.giel1989@gmail.com').then(() => {
+        const msg = document.getElementById('copiedMsg');
+        const icon = document.getElementById('copyIcon');
+        msg.classList.remove('hidden');
+        icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>';
+        icon.style.color = '#16a34a';
+        setTimeout(() => {
+          msg.classList.add('hidden');
+          icon.style.color = '';
+          icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>';
+        }, 2000);
+      });
+    }
+
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') document.getElementById('emailPopup').classList.remove('open');
+    });
+  </script>
+</body>
+</html>
