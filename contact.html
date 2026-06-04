@@ -160,6 +160,113 @@
       transform: translateY(-1px);
     }
 
+    /* Dropdown styling — zelfde look als een form-input */
+    select.form-input {
+      appearance: none;
+      -webkit-appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%239ca3af' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 0.75rem center;
+      background-size: 1rem;
+      padding-right: 2.5rem;
+      cursor: pointer;
+    }
+    select.form-input:focus {
+      border-color: #0000a4;
+      box-shadow: 0 0 0 3px rgba(0,0,164,0.08);
+      background-color: #fff;
+    }
+
+    /* Formulier label stijl */
+    .field-label {
+      display: block;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #6b7280;
+      margin-bottom: 0.375rem;
+    }
+
+    /* ── Veld-status stijlen (worden door JS toegevoegd/verwijderd) ──────────
+       JS zet class 'valid' of 'invalid' op een veld na invoer.
+       Groene rand = correct, rode rand = fout. */
+    .form-input.valid {
+      border-color: #16a34a;
+      box-shadow: 0 0 0 3px rgba(22,163,74,0.1);
+      background-color: #f0fdf4;
+    }
+    .form-input.invalid {
+      border-color: #ef4444;
+      box-shadow: 0 0 0 3px rgba(239,68,68,0.1);
+    }
+    /* Dropdown behoudt zijn pijl-icoon ook in valid/invalid state */
+    select.form-input.valid,
+    select.form-input.invalid {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%239ca3af' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 0.75rem center;
+      background-size: 1rem;
+      padding-right: 2.5rem;
+    }
+
+    /* Verzendknop uitgeschakeld — grijs en niet klikbaar */
+    .btn-submit:disabled {
+      background-color: #d1d5db;
+      color: #9ca3af;
+      cursor: not-allowed;
+      transform: none !important;
+      box-shadow: none !important;
+    }
+
+    /* Sectie voor berichtenhistorie (stap 5) */
+    .history-card {
+      background: rgba(255,255,255,0.88);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-radius: 1.25rem;
+      border: 1px solid rgba(255,200,100,0.2);
+    }
+    .message-card {
+      border: 1.5px solid #e5e7eb;
+      border-radius: 0.875rem;
+      padding: 1rem;
+      cursor: pointer;
+      transition: all 0.18s ease;
+      background: #fff;
+    }
+    .message-card:hover {
+      border-color: #0000a4;
+      background: #f5f5ff;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0,0,164,0.08);
+    }
+
+    /* Modal overlay */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      backdrop-filter: blur(4px);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+    .modal-overlay.open { display: flex; }
+
+    @keyframes modal-in {
+      from { opacity: 0; transform: scale(0.94) translateY(8px); }
+      to   { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    .modal-box { animation: modal-in 0.2s ease; }
+
+    /* Success melding animatie */
+    @keyframes fade-in-down {
+      from { opacity: 0; transform: translateY(-8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .success-msg { animation: fade-in-down 0.3s ease; }
+
     @media (max-width: 639px) {
       .tree { display: none; }
       .sun  { width: 70px; height: 70px; }
@@ -238,7 +345,7 @@
 
     <!-- Direct contact links -->
     <div class="glass-card p-5 sm:p-6 mb-5">
-      <h2 class="text-sm font-bold text-gray-500 uppercase tracking-widest mb-4">Direct bereikbaar via</h2>
+      <h2 class="text-sm font-extrabold text-gray-700 uppercase tracking-widest mb-4">Direct bereikbaar via</h2>
       <div class="flex flex-col gap-3">
 
         <!-- Email -->
@@ -295,37 +402,154 @@
 
     <!-- Contact form -->
     <div class="glass-card p-5 sm:p-6">
-      <h2 class="text-sm font-bold text-gray-500 uppercase tracking-widest mb-4">Of stuur een bericht</h2>
-      <form onsubmit="handleSubmit(event)" class="flex flex-col gap-4">
+      <h2 class="text-sm font-extrabold text-gray-700 uppercase tracking-widest mb-5">Of stuur een bericht</h2>
+
+      <!-- Success melding — verschijnt na verzenden (stap 3) -->
+      <div id="successMsg" class="hidden success-msg mb-5 p-4 rounded-xl flex items-start gap-3" style="background:#dcfce7; border:1.5px solid #bbf7d0;">
+        <svg class="w-5 h-5 flex-shrink-0 mt-0.5" fill="none" stroke="#16a34a" stroke-width="2.5" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        <div>
+          <p class="text-sm font-bold" style="color:#15803d;">Bericht verzonden!</p>
+          <p class="text-xs mt-0.5" style="color:#166534;">Ik neem snel contact op.</p>
+        </div>
+      </div>
+
+      <form id="contactForm" novalidate class="flex flex-col gap-5">
+
+        <!-- Naam + E-mail naast elkaar op desktop -->
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+          <!-- Naam veld -->
           <div>
-            <label class="block text-xs font-semibold text-gray-500 mb-1.5">Naam</label>
-            <input type="text" class="form-input" placeholder="Jouw naam" required />
+            <label for="fieldNaam" class="field-label">
+              Naam <span style="color:#ef4444;">*</span>
+            </label>
+            <input
+              id="fieldNaam"
+              type="text"
+              class="form-input"
+              placeholder="Jouw naam"
+              autocomplete="name"
+            />
+            <!-- Foutmelding — wordt zichtbaar bij ongeldige invoer (stap 2) -->
+            <p id="errorNaam" class="hidden text-xs mt-1.5 font-medium" style="color:#ef4444;">
+              Naam moet minimaal 2 tekens zijn
+            </p>
           </div>
+
+          <!-- E-mail veld -->
           <div>
-            <label class="block text-xs font-semibold text-gray-500 mb-1.5">E-mail</label>
-            <input type="email" class="form-input" placeholder="jouw@email.com" required />
+            <label for="fieldEmail" class="field-label">
+              E-mail <span style="color:#ef4444;">*</span>
+            </label>
+            <input
+              id="fieldEmail"
+              type="email"
+              class="form-input"
+              placeholder="jouw@email.com"
+              autocomplete="email"
+            />
+            <p id="errorEmail" class="hidden text-xs mt-1.5 font-medium" style="color:#ef4444;">
+              Vul een geldig e-mailadres in
+            </p>
           </div>
         </div>
+
+        <!-- Onderwerp dropdown -->
         <div>
-          <label class="block text-xs font-semibold text-gray-500 mb-1.5">Onderwerp</label>
-          <input type="text" class="form-input" placeholder="Waar gaat het over?" />
+          <label for="fieldOnderwerp" class="field-label">
+            Onderwerp <span style="color:#ef4444;">*</span>
+          </label>
+          <select id="fieldOnderwerp" class="form-input">
+            <option value="">— Kies een onderwerp —</option>
+            <option value="Vraag">Vraag</option>
+            <option value="Project bespreken">Project bespreken</option>
+            <option value="Anders">Anders</option>
+          </select>
+          <p id="errorOnderwerp" class="hidden text-xs mt-1.5 font-medium" style="color:#ef4444;">
+            Selecteer een onderwerp
+          </p>
         </div>
+
+        <!-- Bericht textarea -->
         <div>
-          <label class="block text-xs font-semibold text-gray-500 mb-1.5">Bericht</label>
-          <textarea class="form-input" rows="4" placeholder="Schrijf hier je bericht..." required style="resize:vertical;"></textarea>
+          <label for="fieldBericht" class="field-label">
+            Bericht <span style="color:#ef4444;">*</span>
+          </label>
+          <textarea
+            id="fieldBericht"
+            class="form-input"
+            rows="5"
+            placeholder="Schrijf hier je bericht..."
+            style="resize:vertical; min-height:120px;"
+          ></textarea>
+          <div class="flex items-center justify-between mt-1.5">
+            <p id="errorBericht" class="hidden text-xs font-medium" style="color:#ef4444;">
+              Bericht moet minimaal 10 tekens zijn
+            </p>
+            <!-- Teken­teller (stap 2) -->
+            <p id="berichtTeller" class="text-xs text-gray-400 ml-auto">0 tekens</p>
+          </div>
         </div>
-        <button type="submit" class="btn-submit">
+
+        <!-- Verzendknop -->
+        <button
+          type="submit"
+          id="btnVerstuur"
+          class="btn-submit"
+          disabled
+        >
           <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
           </svg>
           Verstuur bericht
         </button>
-      </form>
 
-      <!-- Success message (hidden by default) -->
-      <div id="successMsg" class="hidden mt-4 p-4 rounded-xl text-center" style="background:#dcfce7;">
-        <p class="text-sm font-semibold" style="color:#15803d;">Bericht verstuurd! Ik neem zo snel mogelijk contact op.</p>
+      </form>
+    </div>
+
+    <!-- Berichten­historie sectie (stap 5) -->
+    <div id="historieSection" class="history-card p-5 sm:p-6 mt-5 hidden">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-sm font-bold text-gray-500 uppercase tracking-widest">Eerder verzonden berichten</h2>
+        <button
+          id="btnWisAlles"
+          class="text-xs font-semibold px-3 py-1.5 rounded-lg transition-all"
+          style="color:#ef4444; background:#fef2f2; border:1px solid #fecaca;"
+          onmouseover="this.style.background='#fee2e2'"
+          onmouseout="this.style.background='#fef2f2'"
+        >
+          Wis alle berichten
+        </button>
+      </div>
+      <div id="berichtenLijst" class="flex flex-col gap-3">
+        <!-- Berichten worden hier geladen door JavaScript (stap 5) -->
+      </div>
+    </div>
+
+    <!-- Modal voor volledig bericht (stap 5) -->
+    <div class="modal-overlay" id="berichtModal">
+      <div class="modal-box bg-white rounded-2xl shadow-2xl p-6 w-full max-w-lg max-h-[80vh] overflow-y-auto" onclick="event.stopPropagation()">
+        <div class="flex items-start justify-between mb-4">
+          <div>
+            <h3 id="modalNaam" class="text-base font-bold" style="color:#0000a4;"></h3>
+            <p id="modalMeta" class="text-xs text-gray-400 mt-0.5"></p>
+          </div>
+          <button
+            onclick="document.getElementById('berichtModal').classList.remove('open')"
+            class="ml-4 p-1.5 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors flex-shrink-0"
+            aria-label="Sluiten"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+          </button>
+        </div>
+        <div class="mb-3">
+          <span id="modalOnderwerp" class="text-xs font-semibold px-2.5 py-1 rounded-full" style="background:#e8f0ff; color:#0000a4;"></span>
+        </div>
+        <p id="modalBericht" class="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap"></p>
       </div>
     </div>
 
@@ -337,18 +561,293 @@
   </main>
 
   <script>
+    // ════════════════════════════════════════════════════════════════════════
+    // WAT IS FORM VALIDATIE — EN WAAROM DOEN WE HET?
+    //
+    // Validatie = controleren of de gebruiker correcte data heeft ingevuld
+    // VÓÓR we het formulier verwerken. Zonder validatie kunnen gebruikers
+    // lege velden, ongeldig e-mailadressen, of te korte berichten insturen.
+    //
+    // We doen het hier "client-side" (in de browser) voor directe feedback.
+    // Op een echte server zou je het OOK server-side valideren — nooit
+    // alleen in de browser, want die code is zichtbaar en aanpasbaar.
+    // ════════════════════════════════════════════════════════════════════════
+
+    // Sleutelnaam voor localStorage — staat bovenaan zodat alle functies er bij kunnen
+    const STORAGE_KEY = 'contactBerichten';
+
+    // ════════════════════════════════════════════════════════════════════════
+    // BERICHTEN­HISTORIE — UITLEZEN UIT LOCALSTORAGE EN TONEN ALS KAARTEN
+    //
+    // Bij elke paginastart roepen we laadHistorie() aan.
+    // Die functie leest de JSON-tekst uit localStorage, zet hem terug naar
+    // een array van objecten, en maakt voor elk bericht een HTML-kaart.
+    // ════════════════════════════════════════════════════════════════════════
+
+    function formatDatum(isoString) {
+      // Zet "2026-06-04T14:32:10.000Z" om naar "4 jun 2026, 14:32"
+      const d = new Date(isoString);
+      return d.toLocaleDateString('nl-NL', { day: 'numeric', month: 'short', year: 'numeric' })
+        + ', ' + d.toLocaleTimeString('nl-NL', { hour: '2-digit', minute: '2-digit' });
+    }
+
+    function laadHistorie() {
+      const berichten = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+      const sectie    = document.getElementById('historieSection');
+      const lijst     = document.getElementById('berichtenLijst');
+
+      // Toon de sectie alleen als er berichten zijn
+      if (berichten.length === 0) {
+        sectie.classList.add('hidden');
+        return;
+      }
+      sectie.classList.remove('hidden');
+
+      // Maak de lijst leeg en vul hem opnieuw — zo blijft hij altijd actueel
+      lijst.innerHTML = '';
+
+      berichten.forEach(function (b, index) {
+        // Eerste 100 tekens van het bericht als voorvertoning
+        const voorvertoning = b.bericht.length > 100
+          ? b.bericht.slice(0, 100) + '…'
+          : b.bericht;
+
+        // Maak een kaart-element aan via innerHTML
+        const kaart = document.createElement('div');
+        kaart.className = 'message-card';
+        kaart.innerHTML =
+          '<div class="flex items-start justify-between gap-3 mb-1">' +
+            '<p class="text-sm font-bold" style="color:#0000a4;">' + escapeHtml(b.naam) + '</p>' +
+            '<span class="text-xs font-semibold px-2 py-0.5 rounded-full flex-shrink-0" style="background:#e8f0ff;color:#0000a4;">' + escapeHtml(b.onderwerp) + '</span>' +
+          '</div>' +
+          '<p class="text-xs text-gray-400 mb-2">' + formatDatum(b.datum) + '</p>' +
+          '<p class="text-xs text-gray-600 leading-relaxed">' + escapeHtml(voorvertoning) + '</p>';
+
+        // Klik op de kaart → open modal met volledig bericht
+        kaart.addEventListener('click', function () {
+          document.getElementById('modalNaam').textContent      = b.naam;
+          document.getElementById('modalMeta').textContent      = b.email + ' · ' + formatDatum(b.datum);
+          document.getElementById('modalOnderwerp').textContent = b.onderwerp;
+          document.getElementById('modalBericht').textContent   = b.bericht;
+          document.getElementById('berichtModal').classList.add('open');
+        });
+
+        lijst.appendChild(kaart);
+      });
+    }
+
+    // Voorkomt XSS: zet < > & om naar veilige HTML-tekens
+    function escapeHtml(tekst) {
+      return tekst.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+
+    // ─── "Wis alle berichten" knop ────────────────────────────────────────────
+    document.getElementById('btnWisAlles').addEventListener('click', function () {
+      if (confirm('Weet je zeker dat je alle berichten wilt wissen? Dit kan niet ongedaan worden.')) {
+        localStorage.removeItem(STORAGE_KEY);
+        laadHistorie(); // herlaad — sectie verdwijnt nu automatisch
+      }
+    });
+
+    // Laad de historie meteen bij het openen van de pagina
+    laadHistorie();
+
+    // ─── Navigatie ───────────────────────────────────────────────────────────
     function toggleMobileMenu() {
       document.getElementById('mobileMenu').classList.toggle('hidden');
     }
 
-    function handleSubmit(e) {
-      e.preventDefault();
-      document.getElementById('successMsg').classList.remove('hidden');
-      e.target.reset();
-      setTimeout(() => {
-        document.getElementById('successMsg').classList.add('hidden');
-      }, 4000);
+    // ─── Modal sluiten ────────────────────────────────────────────────────────
+    document.getElementById('berichtModal').addEventListener('click', function () {
+      this.classList.remove('open');
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') document.getElementById('berichtModal').classList.remove('open');
+    });
+
+    // ─── Verwijzingen naar HTML-elementen ─────────────────────────────────────
+    // We slaan de elementen op in variabelen zodat we ze niet telkens opnieuw
+    // hoeven op te zoeken met getElementById (dat is sneller en leesbaarder).
+    const velden = {
+      naam:      document.getElementById('fieldNaam'),
+      email:     document.getElementById('fieldEmail'),
+      onderwerp: document.getElementById('fieldOnderwerp'),
+      bericht:   document.getElementById('fieldBericht'),
+    };
+    const fouten = {
+      naam:      document.getElementById('errorNaam'),
+      email:     document.getElementById('errorEmail'),
+      onderwerp: document.getElementById('errorOnderwerp'),
+      bericht:   document.getElementById('errorBericht'),
+    };
+    const btnVerstuur   = document.getElementById('btnVerstuur');
+    const berichtTeller = document.getElementById('berichtTeller');
+
+    // ─── VALIDATIEREGELS ─────────────────────────────────────────────────────
+    // Elke functie controleert één veld en geeft true (geldig) of false terug.
+    //
+    // De e-mailregel gebruikt een "reguliere expressie" (regex): een patroon
+    // dat beschrijft hoe een geldig e-mailadres eruitziet.
+    // /^[^\s@]+@[^\s@]+\.[^\s@]+$/  →  "iets@iets.iets", zonder spaties.
+    function isNaamGeldig()      { return velden.naam.value.trim().length >= 2; }
+    function isEmailGeldig()     { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(velden.email.value.trim()); }
+    function isOnderwerpGeldig() { return velden.onderwerp.value !== ''; }
+    function isBerichtGeldig()   { return velden.bericht.value.trim().length >= 10; }
+
+    // ─── VELDSTATUS BIJWERKEN ─────────────────────────────────────────────────
+    // Zet 'valid' of 'invalid' class op het veld → CSS past de randkleur aan.
+    // Foutmelding wordt zichtbaar als het veld ongeldig is.
+    // We tonen pas feedback als touched=true, zodat lege velden bij het laden
+    // van de pagina niet meteen rood worden.
+    function updateVeld(input, foutEl, isGeldig, touched) {
+      input.classList.remove('valid', 'invalid');
+      foutEl.classList.add('hidden');
+      if (!touched) return;
+      if (isGeldig) {
+        input.classList.add('valid');
+      } else {
+        input.classList.add('invalid');
+        foutEl.classList.remove('hidden');
+      }
     }
+
+    // ─── VERZENDKNOP ACTIVEREN/DEACTIVEREN ───────────────────────────────────
+    // Controleert alle vier velden tegelijk. Pas als alles klopt wordt de
+    // knop klikbaar. Dit voorkomt dat een half-ingevuld formulier verstuurd wordt.
+    function updateKnop() {
+      const allesGeldig = isNaamGeldig() && isEmailGeldig() && isOnderwerpGeldig() && isBerichtGeldig();
+      btnVerstuur.disabled = !allesGeldig;
+    }
+
+    // ════════════════════════════════════════════════════════════════════════
+    // WAT ZIJN EVENT LISTENERS?
+    //
+    // Een event listener is een functie die "luistert" naar iets dat er
+    // op een HTML-element GEBEURT — zoals een klik, toetsaanslag, of
+    // veldwijziging. Je koppelt hem met addEventListener(event, functie).
+    //
+    //   veld.addEventListener('input', fn)  → fn() na elke toetsaanslag
+    //   veld.addEventListener('blur', fn)   → fn() als je het veld verlaat
+    //   veld.addEventListener('change', fn) → fn() als de waarde verandert
+    //
+    // Zo reageert de pagina live op wat de gebruiker doet, zonder dat de
+    // pagina opnieuw geladen hoeft te worden.
+    // ════════════════════════════════════════════════════════════════════════
+
+    // We houden bij of de gebruiker een veld al heeft aangeraakt (touched).
+    // Zo tonen we pas foutmeldingen als de gebruiker er écht mee bezig is geweest.
+    let touched = { naam: false, email: false, onderwerp: false, bericht: false };
+
+    // Naam — valideer na elke toetsaanslag
+    velden.naam.addEventListener('input', function () {
+      touched.naam = true;
+      updateVeld(this, fouten.naam, isNaamGeldig(), true);
+      updateKnop();
+    });
+
+    // E-mail — valideer na elke toetsaanslag
+    velden.email.addEventListener('input', function () {
+      touched.email = true;
+      updateVeld(this, fouten.email, isEmailGeldig(), true);
+      updateKnop();
+    });
+
+    // Onderwerp — 'change' i.p.v. 'input': een dropdown vuurt change als
+    // de geselecteerde optie wisselt
+    velden.onderwerp.addEventListener('change', function () {
+      touched.onderwerp = true;
+      updateVeld(this, fouten.onderwerp, isOnderwerpGeldig(), true);
+      updateKnop();
+    });
+
+    // Bericht — valideer + update tekenteller
+    velden.bericht.addEventListener('input', function () {
+      touched.bericht = true;
+      berichtTeller.textContent = this.value.length + ' tekens';
+      updateVeld(this, fouten.bericht, isBerichtGeldig(), true);
+      updateKnop();
+    });
+
+    // blur = gebruiker verlaat het veld zonder te typen → dan ook valideren
+    // zodat een overgeslagen veld toch rood wordt
+    velden.naam.addEventListener('blur',      function () { touched.naam = true;      updateVeld(this, fouten.naam,      isNaamGeldig(),      true); updateKnop(); });
+    velden.email.addEventListener('blur',     function () { touched.email = true;     updateVeld(this, fouten.email,     isEmailGeldig(),     true); updateKnop(); });
+    velden.onderwerp.addEventListener('blur', function () { touched.onderwerp = true; updateVeld(this, fouten.onderwerp, isOnderwerpGeldig(), true); updateKnop(); });
+    velden.bericht.addEventListener('blur',   function () { touched.bericht = true;   updateVeld(this, fouten.bericht,   isBerichtGeldig(),   true); updateKnop(); });
+
+    // ════════════════════════════════════════════════════════════════════════
+    // WAT IS LOCALSTORAGE — EN WAAROM GEBRUIKEN WE HET?
+    //
+    // localStorage is een kleine opslagplek IN je browser. Je kunt er tekst
+    // in bewaren die blijft staan ook als je de pagina sluit of herlaadt.
+    // Het is geen database op een server — alleen op jouw eigen computer.
+    //
+    // We gebruiken het hier om verzonden berichten te onthouden, zodat de
+    // historiesectie (stap 5) ze kan tonen.
+    //
+    // HOE WERKT JSON IN LOCALSTORAGE?
+    //
+    // localStorage slaat alleen tekst op, geen objecten. Daarom:
+    //   JSON.stringify(object) → zet een object om naar tekst  "{"naam":"Giel"}"
+    //   JSON.parse(tekst)      → zet tekst terug naar een object {naam: "Giel"}
+    //
+    // Stappen bij opslaan:
+    //   1. Haal bestaande berichten op uit localStorage (of begin met [])
+    //   2. Voeg het nieuwe bericht toe aan de lijst
+    //   3. Sla de hele lijst weer op als tekst
+    // ════════════════════════════════════════════════════════════════════════
+
+    function slaBerichtOp(naam, email, onderwerp, bericht) {
+      // Stap 1: haal bestaande berichten op. Als er nog niets is, gebruik []
+      const bestaande = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+
+      // Stap 2: maak een nieuw berichtobject aan met datum/tijd
+      const nieuw = {
+        naam:      naam,
+        email:     email,
+        onderwerp: onderwerp,
+        bericht:   bericht,
+        datum:     new Date().toISOString(), // bijv. "2026-06-04T14:32:10.000Z"
+      };
+
+      // Voeg het nieuwe bericht vooraan de lijst toe (nieuwste bovenaan)
+      bestaande.unshift(nieuw);
+
+      // Stap 3: sla de bijgewerkte lijst op als tekst
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(bestaande));
+    }
+
+    // ─── Formulier verzenden ─────────────────────────────────────────────────
+    document.getElementById('contactForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      // Lees de veldwaarden NU uit — vóór de reset ze leegmaakt
+      const naam      = velden.naam.value.trim();
+      const email     = velden.email.value.trim();
+      const onderwerp = velden.onderwerp.value;
+      const bericht   = velden.bericht.value.trim();
+
+      // Sla op in localStorage en herlaad de historiesectie meteen
+      slaBerichtOp(naam, email, onderwerp, bericht);
+      laadHistorie();
+
+      // Toon de groene succesmelding
+      const successMsg = document.getElementById('successMsg');
+      successMsg.classList.remove('hidden');
+      successMsg.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+      // Na 3 seconden: alles resetten
+      setTimeout(function () {
+        successMsg.classList.add('hidden');
+        e.target.reset();
+        Object.values(velden).forEach(function (veld) { veld.classList.remove('valid', 'invalid'); });
+        Object.values(fouten).forEach(function (fout) { fout.classList.add('hidden'); });
+        berichtTeller.textContent = '0 tekens';
+        touched.naam = false; touched.email = false;
+        touched.onderwerp = false; touched.bericht = false;
+        btnVerstuur.disabled = true;
+      }, 3000);
+    });
   </script>
 </body>
 </html>
