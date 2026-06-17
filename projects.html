@@ -127,6 +127,38 @@
       .tree { display: none; }
       .sun  { width: 70px; height: 70px; }
     }
+
+    /* Draaiende laadindicator */
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid rgba(0, 0, 164, 0.15);
+      border-top-color: #0000a4;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 12px;
+    }
+
+    /* Draai-animatie op de refresh-knop tijdens laden */
+    .spin-icon { animation: spin 0.8s linear infinite; }
+
+    .crypto-card {
+      position: relative;
+      z-index: 10;
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-radius: 1.25rem;
+      border: 1px solid rgba(255, 200, 100, 0.2);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .crypto-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 20px 48px rgba(0, 0, 0, 0.18);
+    }
   </style>
 </head>
 <body class="min-h-screen pt-14 pb-10">
@@ -283,6 +315,56 @@
 
     </div>
 
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <!-- CRYPTO PRIJZEN — API leerproject                          -->
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <div class="mt-12">
+
+      <!-- Sectie-header met refresh-knop -->
+      <div class="glass-card p-5 sm:p-6 mb-5 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div>
+          <h2 class="text-xl sm:text-2xl font-extrabold" style="color:#0000a4;">Crypto Prijzen</h2>
+          <p class="text-sm text-gray-500 mt-0.5">Live data via de CoinGecko API — oefenproject</p>
+        </div>
+        <button
+          id="refresh-btn"
+          onclick="fetchCryptoPrices()"
+          class="btn-orange flex items-center gap-2 text-white text-sm font-semibold px-5 py-2.5 rounded-xl whitespace-nowrap"
+        >
+          <svg id="refresh-icon" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+          </svg>
+          Vernieuwen
+        </button>
+      </div>
+
+      <!-- Laadindicator: zichtbaar zolang de API-aanroep bezig is -->
+      <div id="crypto-loading" class="glass-card p-10 text-center">
+        <div class="spinner"></div>
+        <p class="text-sm text-gray-500 font-medium">Prijzen ophalen...</p>
+      </div>
+
+      <!-- Foutmelding: zichtbaar als de API niet bereikbaar is -->
+      <div id="crypto-error" class="hidden glass-card p-8 text-center">
+        <div class="w-12 h-12 rounded-full flex items-center justify-center mx-auto mb-4" style="background:#fee2e2;">
+          <svg class="w-6 h-6" fill="none" stroke="#dc2626" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+          </svg>
+        </div>
+        <p class="font-semibold text-gray-700 mb-1">Kon geen verbinding maken</p>
+        <p id="crypto-error-msg" class="text-sm text-gray-500">Controleer je internetverbinding en probeer opnieuw.</p>
+      </div>
+
+      <!-- Crypto-kaarten grid: wordt gevuld door JavaScript -->
+      <div id="crypto-grid" class="hidden grid grid-cols-1 sm:grid-cols-3 gap-5"></div>
+
+      <!-- Tijdstempel van de laatste update -->
+      <p id="crypto-timestamp" class="hidden text-xs text-white/40 text-center mt-3"></p>
+
+    </div>
+
     <!-- Footer -->
     <div class="mt-10 text-center">
       <p class="text-xs text-white/40">© 2026 Giel Mallens</p>
@@ -294,6 +376,216 @@
     function toggleMobileMenu() {
       document.getElementById('mobileMenu').classList.toggle('hidden');
     }
+
+    // ════════════════════════════════════════════════════════════════
+    // WAT IS EEN API?
+    // ════════════════════════════════════════════════════════════════
+    // API = "Application Programming Interface"
+    //
+    // Vergelijk het met een restaurant:
+    //   - De keuken (server) heeft alle data — hier: cryptoprijzen
+    //   - Jij (de browser) wil iets weten
+    //   - De ober (API) is de tussenpersoon: jij geeft je bestelling,
+    //     de ober gaat naar de keuken en brengt het antwoord terug
+    //
+    // CoinGecko is zo'n keuken. Zij houden alle cryptoprijzen bij.
+    // Wij sturen een verzoek naar hun API-adres (een URL) en krijgen
+    // de actuele prijzen terug. Gratis, geen account nodig.
+    // ════════════════════════════════════════════════════════════════
+
+    // ════════════════════════════════════════════════════════════════
+    // WAT DOET "fetch"?
+    // ════════════════════════════════════════════════════════════════
+    // fetch() is een ingebouwde JavaScript-functie die een
+    // HTTP-verzoek stuurt naar een URL — het adres van de API.
+    //
+    // Voorbeeld:
+    //   fetch('https://api.coingecko.com/...')
+    //
+    // Dit stuurt een verzoek over het internet en geeft een
+    // "Promise" terug: een belofte dat er straks een antwoord komt.
+    // Hoe snel dat antwoord er is hangt af van je verbinding.
+    // ════════════════════════════════════════════════════════════════
+
+    // ════════════════════════════════════════════════════════════════
+    // WAT IS ASYNC/AWAIT?
+    // ════════════════════════════════════════════════════════════════
+    // JavaScript werkt normaal van boven naar beneden, regel voor
+    // regel, razendsnel. Maar een API-aanroep kan seconden duren.
+    // Als JS dan gewoon wacht, bevriest de héle pagina — niet handig.
+    //
+    // async/await lost dit op:
+    //   - "async" voor een functie zegt: "deze functie doet iets
+    //     wat even kan duren, maar blokkeert de pagina niet"
+    //   - "await" voor een actie zegt: "wacht hier totdat dit klaar
+    //     is, maar laat de rest van de browser gewoon doorwerken"
+    //
+    // Vergelijk het met eten bestellen:
+    //   - Je bestelt (fetch)              → verzoek verstuurd
+    //   - Je gaat zitten wachten (await)  → pagina blijft klikbaar
+    //   - Eten arriveert                  → we verwerken het antwoord
+    // ════════════════════════════════════════════════════════════════
+
+    // ════════════════════════════════════════════════════════════════
+    // WAT IS JSON?
+    // ════════════════════════════════════════════════════════════════
+    // JSON = "JavaScript Object Notation"
+    // Het standaard-formaat om data via het internet te sturen.
+    // Het lijkt op een JS-object, maar is eigenlijk platte tekst.
+    //
+    // Wat CoinGecko terugstuurT ziet er zo uit:
+    // {
+    //   "bitcoin":  { "eur": 62000, "eur_24h_change": 2.5  },
+    //   "ethereum": { "eur": 3400,  "eur_24h_change": -1.2 },
+    //   "solana":   { "eur": 145,   "eur_24h_change": 0.8  }
+    // }
+    //
+    // Met response.json() zetten we die tekst om naar een echt
+    // JavaScript-object. Daarna kun je gewoon schrijven:
+    //   data.bitcoin.eur              → 62000
+    //   data.ethereum.eur_24h_change  → -1.2
+    // ════════════════════════════════════════════════════════════════
+
+    // De drie coins die we willen tonen, met hun weergave-instellingen
+    const COINS = [
+      { id: 'bitcoin',  naam: 'Bitcoin',  symbool: 'BTC', kleur: '#f7931a', bg: '#fff8ee' },
+      { id: 'ethereum', naam: 'Ethereum', symbool: 'ETH', kleur: '#627eea', bg: '#f0f2ff' },
+      { id: 'solana',   naam: 'Solana',   symbool: 'SOL', kleur: '#9945ff', bg: '#f5f0ff' },
+    ];
+
+    // ────────────────────────────────────────────────────────────────
+    // HOOFDFUNCTIE: haalt live cryptoprijzen op via de API
+    // "async" staat ervoor omdat we binnenin "await" gebruiken
+    // ────────────────────────────────────────────────────────────────
+    async function fetchCryptoPrices() {
+
+      // Toon de laadindicator, verberg foutmelding en kaarten
+      document.getElementById('crypto-loading').classList.remove('hidden');
+      document.getElementById('crypto-error').classList.add('hidden');
+      document.getElementById('crypto-grid').classList.add('hidden');
+      document.getElementById('crypto-timestamp').classList.add('hidden');
+
+      // Laat het refresh-icoon draaien en blokkeer dubbele klik
+      const btn  = document.getElementById('refresh-btn');
+      const icon = document.getElementById('refresh-icon');
+      btn.disabled = true;
+      icon.classList.add('spin-icon');
+
+      try {
+        // fetch() stuurt het HTTP-verzoek naar CoinGecko
+        // "await" wacht op het antwoord zonder de pagina te bevriezen
+        const response = await fetch(
+          'https://api.coingecko.com/api/v3/simple/price' +
+          '?ids=bitcoin,ethereum,solana' +
+          '&vs_currencies=eur' +
+          '&include_24hr_change=true'
+        );
+
+        // Controleer of het verzoek gelukt is (HTTP status 200–299)
+        // Bij een fout (bijv. 429 "te veel verzoeken") gooien we zelf een fout
+        if (!response.ok) {
+          throw new Error('API gaf foutcode ' + response.status);
+        }
+
+        // response.json() leest de JSON-tekst en maakt er een JS-object van
+        // Ook dit kan even duren, dus ook hier "await"
+        const data = await response.json();
+
+        // Verwerk de data en bouw de kaarten
+        renderCryptoCards(data);
+
+      } catch (error) {
+        // Als iets misging (geen internet, API down, rate limit, enz.)
+        // toon dan de foutmelding met de specifieke reden
+        document.getElementById('crypto-loading').classList.add('hidden');
+        document.getElementById('crypto-error').classList.remove('hidden');
+        document.getElementById('crypto-error-msg').textContent =
+          error.message || 'Onbekende fout. Probeer het opnieuw.';
+
+      } finally {
+        // "finally" loopt altijd — of er een fout was of niet
+        // Zet de refresh-knop altijd terug naar normaal
+        btn.disabled = false;
+        icon.classList.remove('spin-icon');
+      }
+    }
+
+    // ────────────────────────────────────────────────────────────────
+    // HULPFUNCTIE: bouwt de HTML-kaarten op basis van de API-data
+    // ────────────────────────────────────────────────────────────────
+    function renderCryptoCards(data) {
+      const grid = document.getElementById('crypto-grid');
+
+      // Array.map() loopt door elke coin en maakt er een HTML-string van
+      // .join('') plakt alle strings samen tot één grote HTML-string
+      grid.innerHTML = COINS.map(coin => {
+
+        // Lees prijs en 24u-verandering uit het data-object
+        // Voorbeeld: data['bitcoin'].eur → 62000
+        const prijs       = data[coin.id].eur;
+        const verandering = data[coin.id].eur_24h_change;
+        const isGestegen  = verandering >= 0;
+
+        // Formatteer prijs als euro (bijv. € 62.000 of € 3.412,50)
+        const prijsFormatted = prijs.toLocaleString('nl-NL', {
+          style: 'currency',
+          currency: 'EUR',
+          maximumFractionDigits: prijs >= 1000 ? 0 : 2,
+        });
+
+        // Formatteer de procentuele verandering (bijv. "+2,45%" of "-1,20%")
+        const veranderingFormatted =
+          (isGestegen ? '+' : '') +
+          verandering.toFixed(2).replace('.', ',') + '%';
+
+        // Groen als gestegen, rood als gedaald
+        const tekstKleur = isGestegen ? '#15803d' : '#dc2626';
+        const badgeBg    = isGestegen ? '#dcfce7' : '#fee2e2';
+        const pijlPad    = isGestegen ? 'M5 15l7-7 7 7' : 'M19 9l-7 7-7-7';
+
+        return `
+          <div class="crypto-card p-6 flex flex-col gap-4">
+
+            <div class="flex items-center gap-3">
+              <div class="w-11 h-11 rounded-xl flex items-center justify-center font-extrabold text-sm"
+                   style="background:${coin.bg}; color:${coin.kleur};">
+                ${coin.symbool}
+              </div>
+              <div>
+                <p class="font-extrabold text-gray-800">${coin.naam}</p>
+                <p class="text-xs text-gray-400 font-medium">${coin.symbool} / EUR</p>
+              </div>
+            </div>
+
+            <p class="text-2xl font-extrabold tracking-tight" style="color:#0000a4;">${prijsFormatted}</p>
+
+            <div class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg self-start"
+                 style="background:${badgeBg};">
+              <svg class="w-4 h-4" fill="none" stroke="${tekstKleur}" stroke-width="2.5" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="${pijlPad}"/>
+              </svg>
+              <span class="text-sm font-bold" style="color:${tekstKleur};">${veranderingFormatted}</span>
+              <span class="text-xs font-medium" style="color:${tekstKleur};">vandaag</span>
+            </div>
+
+          </div>
+        `;
+      }).join('');
+
+      // Verberg laadindicator, toon het grid
+      document.getElementById('crypto-loading').classList.add('hidden');
+      grid.classList.remove('hidden');
+
+      // Toon tijdstempel van de laatste update
+      const ts = document.getElementById('crypto-timestamp');
+      ts.textContent = 'Bijgewerkt om ' +
+        new Date().toLocaleTimeString('nl-NL', { hour: '2-digit', minute: '2-digit' });
+      ts.classList.remove('hidden');
+    }
+
+    // Haal de prijzen direct op zodra de pagina geladen is
+    fetchCryptoPrices();
+
   </script>
 </body>
 </html>
