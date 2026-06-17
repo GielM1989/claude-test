@@ -141,6 +141,12 @@
       .sun  { width: 70px; height: 70px; }
     }
 
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50%       { transform: translateY(-10px); }
+    }
+    .float { animation: float 3.5s ease-in-out infinite; }
+
     /* Navbar */
     .navbar {
       position: fixed;
@@ -323,7 +329,7 @@
 
     <!-- Profielfoto -->
     <div class="flex justify-center mb-5">
-      <div class="relative">
+      <div class="relative float">
         <div class="rounded-full p-1 shadow-lg" style="background: linear-gradient(135deg, #aa151b 0%, #aa151b 33%, #f1bf00 33%, #f1bf00 66%, #aa151b 66%, #aa151b 100%);">
           <img
             src="Giel.jpg"
